@@ -33,6 +33,20 @@ print('Root Mean Squared Error-Test:', np.sqrt(metrics.mean_squared_error(y_test
 mse = metrics.mean_squared_error(y_test, reg_all.predict(X_test))
 print('Mean Squared Error-Test:',mse)
 
+#----------------------------------------------
+# fit final model (Predictions-LR)
+from sklearn import linear_model
+X = df.Date.values
+y = (df.Total_Assessment).values
+X = X.reshape(-1,1)
+model = linear_model.LinearRegression()
+
+model.fit(X, y)
+Xnew = [47,48,49,50,51]
+ynew = model.predict(X)
+for i in range(len(Xnew)):
+    print("X=%s, Predicted=%s" % (Xnew[i], ynew[i]))
+
 #----------------------------------------------------------------------    
 # ARIMA
 from statsmodels.tsa.arima.model import ARIMA
@@ -56,3 +70,32 @@ for t in range(len(test)):
 # evaluate forecasts
 rmse = np.sqrt(metrics.mean_squared_error(test, predictions))
 print('Test MSE: %.3f' % rmse)
+#----------------------------------------
+# create a differenced series (Prediction-ARIMA)
+def difference(dataset, interval=1):
+	diff = list()
+	for i in range(interval, len(dataset)):
+		value = dataset[i] - dataset[i - interval]
+		diff.append(value)
+	return np.array(diff)
+ 
+# invert differenced value
+def inverse_difference(history, yhat, interval=1):
+	return yhat + history[-interval]
+# seasonal difference
+X = df.Total_Assessment.values
+Months_in_year = 12
+differenced = difference(X, Months_in_year)
+# fit model
+model = ARIMA(differenced, order=(1,1,1))
+model_fit = model.fit()
+# multi-step out-of-sample forecast
+forecast = model_fit.forecast(steps=5)
+# invert the differenced forecast to something usable
+history = [x for x in X]
+month = 1
+for yhat in forecast:
+	inverted = inverse_difference(history, yhat, Months_in_year)
+	print('month %d: %f' % (month, inverted))
+	history.append(inverted)
+	month += 1
