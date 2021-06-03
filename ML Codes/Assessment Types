@@ -41,8 +41,8 @@ print('Mean Squared Error-Test:',mse)
 # fit final model (Predictions-LR)
 from sklearn import linear_model
 model = linear_model.LinearRegression()
-X = df.ds.values
-y = (df.y).values
+X = df.Time_Code.values
+y = (df.OA).values
 X = X.reshape(-1,1)
 model.fit(X, y)
 Xnew = []
