@@ -1,5 +1,5 @@
+import os
 import warnings
-
 warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
@@ -11,18 +11,13 @@ import matplotlib.pyplot as plt
 from fbprophet import Prophet
 import logging
 
-logging.getLogger().setLevel(logging.ERROR)
-
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib import style
-
-# --------------------------------------------------------------------
-df = pd.read_csv('...')
-# --------------------------------------------------------------------
+# logging.getLogger().setLevel(logging.ERROR)
+# -------------------------------------------------------------
+df = pd.read_csv(os.path.join('.', 'Aggregated Data.csv'))
+# -------------------------------------------------------------
 # Linear Regression
-X = (df['Time_Code']).values
-y = (df['OA']).values
+X = df.Date.values
+y = (df['Total_Assessment']).values
 X = X.reshape(-1, 1)
 from sklearn.model_selection import train_test_split
 from sklearn import linear_model
@@ -38,34 +33,36 @@ print('Root Mean Squared Error-Test:', np.sqrt(metrics.mean_squared_error(y_test
 
 mse = metrics.mean_squared_error(y_test, reg_all.predict(X_test))
 print('Mean Squared Error-Test:', mse)
-# -----------------------------------
+
+# ----------------------------------------------
 # fit final model (Predictions-LR)
 from sklearn import linear_model
 
-model = linear_model.LinearRegression()
-X = df.Time_Code.values
-y = (df.OA).values
+X = df.Date.values
+y = (df.Total_Assessment).values
 X = X.reshape(-1, 1)
+model = linear_model.LinearRegression()
+
 model.fit(X, y)
-Xnew = []
+Xnew = [47, 48, 49, 50, 51]
 ynew = model.predict(X)
 for i in range(len(Xnew)):
     print("X=%s, Predicted=%s" % (Xnew[i], ynew[i]))
 
-# -------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # ARIMA
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn import metrics
 
 # split into train and test sets
-X = df.OA.values
+X = df.Total_Assessment.values
 size = int(len(X) * 0.7)
 train, test = X[0:size], X[size:len(X)]
 history = [x for x in train]
 predictions = list()
 # walk-forward validation
 for t in range(len(test)):
-    model = ARIMA(history, order=(1, 1, 2))
+    model = ARIMA(history, order=(1, 1, 1))
     model_fit = model.fit()
     output = model_fit.forecast()
     yhat = output[0]
@@ -78,8 +75,8 @@ rmse = np.sqrt(metrics.mean_squared_error(test, predictions))
 print('Test MSE: %.3f' % rmse)
 
 
-# -------------------------------------
-# create a differenced series (Predictions-ARIMA)
+# ----------------------------------------
+# create a differenced series (Prediction-ARIMA)
 def difference(dataset, interval=1):
     diff = list()
     for i in range(interval, len(dataset)):
