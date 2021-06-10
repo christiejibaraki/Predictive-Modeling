@@ -68,8 +68,8 @@ for t in range(len(test)):
     history.append(obs)
     print('predicted=%f, expected=%f' % (yhat, obs))
 # evaluate forecasts
-rmse = np.sqrt(metrics.mean_squared_error(test, predictions))
-print('Test MSE: %.3f' % rmse)
+mse = np.sqrt(metrics.mean_squared_error(test, predictions))
+print('Test MSE: %.3f' % mse)
 #----------------------------------------
 # create a differenced series (Prediction-ARIMA)
 def difference(dataset, interval=1):
