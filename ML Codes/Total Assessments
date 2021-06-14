@@ -17,7 +17,7 @@ logging.getLogger().setLevel(logging.ERROR)
 df = pd.read_csv('...')
 #-------------------------------------------------------------
 # Linear Regression
-X = df.Date.values
+X = df.Time_Code.values
 y = (df['Total_Assessment']).values
 X = X.reshape(-1,1)
 from sklearn.model_selection import train_test_split
@@ -36,7 +36,7 @@ print('Mean Squared Error-Test:',mse)
 #----------------------------------------------
 # fit final model (Predictions-LR)
 from sklearn import linear_model
-X = df.Date.values
+X = df.Time_Code.values
 y = (df.Total_Assessment).values
 X = X.reshape(-1,1)
 model = linear_model.LinearRegression()
@@ -68,8 +68,8 @@ for t in range(len(test)):
     history.append(obs)
     print('predicted=%f, expected=%f' % (yhat, obs))
 # evaluate forecasts
-rmse = np.sqrt(metrics.mean_squared_error(test, predictions))
-print('Test MSE: %.3f' % rmse)
+mse = np.sqrt(metrics.mean_squared_error(test, predictions))
+print('Test MSE: %.3f' % mse)
 #----------------------------------------
 # create a differenced series (Prediction-ARIMA)
 def difference(dataset, interval=1):
