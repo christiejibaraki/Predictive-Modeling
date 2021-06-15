@@ -14,6 +14,9 @@ import logging
 # logging.getLogger().setLevel(logging.ERROR)
 # -------------------------------------------------------------
 df = pd.read_csv(os.path.join('.', 'Aggregated Data.csv'))
+df['Day'] = 1
+df['Date'] = pd.to_datetime(df[['Year', 'Month', 'Day']])
+df['Total_Assessment'] = df['Total']
 # -------------------------------------------------------------
 # Linear Regression
 X = df.Date.values

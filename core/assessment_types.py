@@ -7,9 +7,6 @@ from scipy import stats
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
-% matplotlib
-inline
-
 # Import Prophet
 from fbprophet import Prophet
 import logging
